@@ -14,23 +14,22 @@ struct node* createNode(int key){
     new_node->right=NULL;
     return new_node;
 }
-void insert(struct node* root,int key)
+void insert(struct node **root,int key)
 {
- if(root==NULL){
-     return ;
+ if(*root==NULL){
+     *root=createNode(key);
+     return;
  }  
- if(key==root->key){
+ if(key==(*root)->key){
     return;
  }
- else if(key<root->key){
-    insert(root->left,key);
-    if(root->left==NULL){
-        root->left=createNode(key);
-    }
+ else if(key<(*root)->key){
+    insert(&(*root)->left,key);
+   
  }
-  else if(key>root->key){
-    insert(root->right,key);
-    root->right=createNode(key);
+  else if(key>(*root)->key){
+    insert(&(*root)->right,key);
+   
  }
 
 }
@@ -63,13 +62,13 @@ if(root==NULL){
   display_tree_postorder(root->right);
  cout<< root->key<<" ";
 }
-void delete_node(node*root,int key){
+void delete_node_my_firt_one(node*root,int key){
     if(root=NULL){
         cout<<"No match found";
         return;
     }
     else if(root->key>key){
-        delete_node(root->left,key);
+        delete_node_my_firt_one(root->left,key);
         if(root->left->key==key){
          if(root->left->left==NULL&&root->left->right!=NULL){
         node *temp;
@@ -79,14 +78,14 @@ void delete_node(node*root,int key){
     }
      else if(root->left->right==NULL&&root->left->left!=NULL){
         node *temp;
-        temp=root->left->left;
+        temp=root->left->left; 
         delete(root->left);
         root->left=temp;
     }
     }
     }
     else if(root->key<key){
-        delete_node(root->right,key);
+        delete_node_my_firt_one(root->right,key);
          if(root->right->key==key){
          if(root->right->left==NULL&&root->right->right!=NULL){
         node *temp;
@@ -109,33 +108,89 @@ void delete_node(node*root,int key){
     
 }
 }
+void delete_node2(node **root,int x);
+
+int find_min(node* root){
+    if(root->left==NULL){
+        return root->key;
+    }
+    else{
+       return find_min(root->left);
+    }
+
+}
+void case_1(node **root){
+    node *temp;
+    temp=*root;
+    *root=NULL;
+    delete temp;
+}
+void case_2(node **root){
+    node *temp;
+    temp=*root;
+    if((*root)->left!=NULL)
+    *root=(*root)->left;
+    else
+     *root=(*root)->right;
+     delete(temp);
+}
+void case_3(node **root){
+    int y=find_min((*root)->right);
+    (*root)->key=y;
+    delete_node2(root,y);
+}
+void delete_node2(node **root,int key){
+    if(*root==NULL){
+        cout<<"No value is there";
+        return;
+    }
+    else if(key<(*root)->key){
+        delete_node2(&(*root)->left,key);
+    }
+    else if(key>(*root)->key){
+        delete_node2(&((*root)->right),key);
+    }
+    else if(key==(*root)->key){
+        if((*root)->left==NULL&&(*root)->right==NULL){
+            case_1(root);
+        }
+        if(((*root)->left!=NULL&&(*root)->right==NULL)||((*root)->left==NULL&&(*root)->right!=NULL)){
+            case_2(root);
+        }
+        if((*root)->left!=NULL&&(*root)->right!=NULL){
+            case_3(root);
+        }
+    }
+}
+void delete_tree(node **root){
+    if(*root==NULL)
+    return;
+    delete_tree(&(*root)->left);
+    delete_tree(&(*root)->right);
+    node *temp;
+    temp=*root;
+    delete(temp);
+    *root=NULL;
+}
 int main(){
 node *root;
 int input,n;
-root=new node;
-root->key=10000;
-int count=1;
-root->left=NULL;
-root->right=NULL;
-cout<<"1.Insert\n2.Delete\n3.Inorder Traversal\n4.preoder Traversal\n5.Postorder traversal\n6.Exit\nEnter your choice: ";
+cout<<"1.Insert\n2.Delete\n3.Inorder Traversal\n4.preorder Traversal\n5.postorder Traversal\n6.Exit\nEnter your choice: ";
 cin>>input;
 
-
+int x;
 while(input!=6){
     switch(input){
         case 1:
         cout<<"enter the value";
-        if(root->key==10000){
-            cin>>root->key;
-        }
-        else{ 
-               cin>>n;
-               insert(root,n);
-               
-            }
+        cin>>n;
+        insert(&root,n);
             break;
         case 2:
-        cout<<"2";
+        
+        cout<<"Enter the value: ";
+        cin>>x;
+        delete_node2(&root,x);
             break;
         case 3:
         display_tree_inorder(root);
@@ -148,8 +203,8 @@ while(input!=6){
         break;
 }
 
-cout<<"\n\n\n1.Insert\n2.Delete\n3.Inorder Traversal\n4.preoder Traversal\n6.Exit\nEnter your choice: ";
+cout<<"\n\n\n1.Insert\n2.Delete\n3.Inorder Traversal\n4.preorder Traversal\n5.postorder Traversal\n6.Exit\nEnter your choice: ";
                cin>>input;
 }
-
+delete_tree(&root);
 }
