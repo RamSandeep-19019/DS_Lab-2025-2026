@@ -1,3 +1,4 @@
+
 #include<iostream>
 using namespace std;
 struct node{
@@ -123,7 +124,7 @@ void case_1(node **root){
     node *temp;
     temp=*root;
     *root=NULL;
-    delete temp;
+    delete(temp);
 }
 void case_2(node **root){
     node *temp;
@@ -136,8 +137,8 @@ void case_2(node **root){
 }
 void case_3(node **root){
     int y=find_min((*root)->right);
-    (*root)->key=y;
     delete_node2(root,y);
+    (*root)->key=y;
 }
 void delete_node2(node **root,int key){
     if(*root==NULL){
@@ -154,10 +155,10 @@ void delete_node2(node **root,int key){
         if((*root)->left==NULL&&(*root)->right==NULL){
             case_1(root);
         }
-        if(((*root)->left!=NULL&&(*root)->right==NULL)||((*root)->left==NULL&&(*root)->right!=NULL)){
+        else if(((*root)->left!=NULL&&(*root)->right==NULL)||((*root)->left==NULL&&(*root)->right!=NULL)){
             case_2(root);
         }
-        if((*root)->left!=NULL&&(*root)->right!=NULL){
+        else if((*root)->left!=NULL&&(*root)->right!=NULL){
             case_3(root);
         }
     }
@@ -174,6 +175,7 @@ void delete_tree(node **root){
 }
 int main(){
 node *root;
+root=NULL;
 int input,n;
 cout<<"1.Insert\n2.Delete\n3.Inorder Traversal\n4.preorder Traversal\n5.postorder Traversal\n6.Exit\nEnter your choice: ";
 cin>>input;
@@ -182,23 +184,26 @@ int x;
 while(input!=6){
     switch(input){
         case 1:
-        cout<<"enter the value";
+        cout<<"enter the value: ";
         cin>>n;
         insert(&root,n);
             break;
         case 2:
         
-        cout<<"Enter the value: ";
+        cout<<"Enter value to delete: ";
         cin>>x;
         delete_node2(&root,x);
             break;
         case 3:
+        cout<<"Inorder traversal: ";
         display_tree_inorder(root);
         break;
         case 4:
+        cout<<"Preorder traversal: ";
         display_tree_preorder(root);
         break;
         case 5:
+        cout<<"Postorder traversal: ";
         display_tree_postorder(root);
         break;
 }
